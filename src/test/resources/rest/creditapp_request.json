@@ -1,0 +1,9 @@
+{
+  "header": {
+    "pid": "1"
+  },
+  "payload": "ewogICJhcHBsaWNhdGlvbklkIiA6ICIzMzAwMTUiCn0K",
+  "security": {
+    "sig": "K8nXm870vCNK0etJ2oM74uDa0ExLtffsxbbZlm9TXF4990jNsLXD9fSyn2xQpG5trCTKun9cbyZEvIgf7v5dHenIzCh9rzS4+94m1nm498K5C6ROkJfXDbPT5Fvn30PFDyPTZ6z8+k1PA0dFoBAmgrpmsqahS0/YulhIrrELFQQK0vSAUYOP1LWuHYj9ZzNb9rHvhKNIefso91Kie7XQmIdcJtKZhE33at2146D6NJZy5r/jFP3Ww3I/lCSvkhMtkrapmNV5K0Yrtg7Ewg1ELL7sLpK8t76ZfjwTuMD/NRo5QxxoHO0KzhhasMSEnd1/kUFSs9mMpsA2hM8oivPpBA=="
+  }
+}
