@@ -40,7 +40,7 @@ public class PartnerCertificateRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
-        InputStream in = getClass().getResourceAsStream("/ssl/partner.cer");
+        InputStream in = getClass().getResourceAsStream("/security/partner.cer");
         certBytes = IOUtils.toByteArray(in);
         log.debug("certBytes.length={}", certBytes.length);
 

@@ -42,9 +42,16 @@ $ openssl pkcs12 -in partner.p12 -nokeys -out partner.crt
 
 Export unencrypted private key:
 ```
-$ openssl pkcs12 -in server.p12 -nodes -nocerts -out server.key
+$ openssl pkcs12 -in server.p12 -nodes -nocerts -out server_private.pem
 
-$ openssl pkcs12 -in partner.p12 -nodes -nocerts -out partner.key
+$ openssl pkcs12 -in partner.p12 -nodes -nocerts -out partner_private.pem
+```
+
+### Export Public Key from Certificate
+```
+$ openssl x509 -in partner.crt -pubkey -noout > partner_public.pem
+
+$ openssl x509 -in server.crt -pubkey -noout > server_public.pem
 ```
 
 ## OpenSSL
