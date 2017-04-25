@@ -9,6 +9,7 @@ import devnoh.demoapp.dto.ResponseHeader;
 import devnoh.demoapp.dto.ResponseMessage;
 import devnoh.demoapp.error.PartnerNotFoundException;
 import devnoh.demoapp.service.PartnerService;
+import devnoh.demoapp.service.SecurityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -30,6 +31,9 @@ public class CreditApplicationController {
     @Autowired
     PartnerService partnerService;
 
+    @Autowired
+    private SecurityService securityService;
+
     @PostMapping(value = "/creditapplication",
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -44,7 +48,7 @@ public class CreditApplicationController {
                 throw new PartnerNotFoundException(partnerId);
             }
 
-            // TODO: verify signature
+            securityService.verifyMessageSignature(message, partnerId);
 
             String requestPayload = new String(Base64.getDecoder().decode(message.getPayload().toString()), "UTF-8");
             log.debug("requestPayload={}", requestPayload);
@@ -65,7 +69,7 @@ public class CreditApplicationController {
             responseMessage.setHeader(responseHeader);
             responseMessage.setPayload(Base64.getEncoder().encode(responsePayload.getBytes("UTF-8")));
 
-            // TODO: add signature
+            securityService.addMessageSignature(responseMessage);
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
