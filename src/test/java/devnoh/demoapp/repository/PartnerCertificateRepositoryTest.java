@@ -28,6 +28,9 @@ import static org.junit.Assert.assertEquals;
 @Slf4j
 public class PartnerCertificateRepositoryTest {
 
+    static final String PEM_CERT_BEGIN = "-----BEGIN CERTIFICATE-----";
+    static final String PEM_CERT_END = "-----END CERTIFICATE-----";
+
     @Autowired
     TestEntityManager entityManager;
 
@@ -40,9 +43,14 @@ public class PartnerCertificateRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
-        InputStream in = getClass().getResourceAsStream("/security/partner.cer");
-        certBytes = IOUtils.toByteArray(in);
-        log.debug("certBytes.length={}", certBytes.length);
+        InputStream certIn = getClass().getResourceAsStream("/security/partner.crt");
+        String certPem = IOUtils.toString(certIn, "UTF-8");
+        certPem = certPem.replace(PEM_CERT_BEGIN, "").replace(PEM_CERT_END, "");
+        certPem = certPem.replaceAll("\\s", "");
+        certBytes = Base64.getDecoder().decode(certPem);
+        //certIn = getClass().getResourceAsStream("/security/partner.cer");
+        //certBytes = IOUtils.toByteArray(certIn);
+        log.info("certBytes.length={}", certBytes.length);
 
         CertificateFactory factory = CertificateFactory.getInstance("X.509");
         certificate = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certBytes));
