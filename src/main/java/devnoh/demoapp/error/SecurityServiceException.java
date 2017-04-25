@@ -4,21 +4,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-public class SecurityException extends RuntimeException {
+public class SecurityServiceException extends RuntimeException {
 
-    public SecurityException() {
+    public SecurityServiceException() {
         super();
     }
 
-    public SecurityException(String message) {
+    public SecurityServiceException(String message) {
         super(message);
     }
 
-    public SecurityException(String message, Throwable cause) {
+    public SecurityServiceException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public SecurityException(Throwable cause) {
+    public SecurityServiceException(Throwable cause) {
         super(cause);
     }
 }

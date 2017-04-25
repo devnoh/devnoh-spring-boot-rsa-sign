@@ -5,6 +5,7 @@ import devnoh.demoapp.dto.RequestMessage;
 import devnoh.demoapp.dto.ResponseMessage;
 import devnoh.demoapp.dto.Security;
 import devnoh.demoapp.error.PartnerCertificateNotFoundException;
+import devnoh.demoapp.error.SecurityServiceException;
 import devnoh.demoapp.repository.PartnerCertificateRepository;
 import devnoh.demoapp.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +46,11 @@ public class SecurityService {
     @Autowired
     private PartnerCertificateRepository partnerCertificateRepository;
 
-    public void addMessageSignature(RequestMessage message) throws SecurityException {
+    public void addMessageSignature(RequestMessage message) throws SecurityServiceException {
         message.setSecurity(new Security(generateMessageSignature(message.getPayload().toString())));
     }
 
-    public void addMessageSignature(ResponseMessage message) throws SecurityException {
+    public void addMessageSignature(ResponseMessage message) throws SecurityServiceException {
         message.setSecurity(new Security(generateMessageSignature(message.getPayload().toString())));
     }
 
@@ -73,19 +74,19 @@ public class SecurityService {
             PrivateKey privateKey = getKeyPairFromServerKeyStore().getPrivate();
             return SecurityUtil.sign(payload, privateKey);
         } catch (Exception e) {
-            throw new SecurityException(e.getMessage(), e);
+            throw new SecurityServiceException(e.getMessage(), e);
         }
     }
 
-    public void verifyMessageSignature(RequestMessage message, Long partnerId) throws SecurityException {
+    public void verifyMessageSignature(RequestMessage message, Long partnerId) throws SecurityServiceException {
         verifyMessageSignature(message.getPayload().toString(), message.getSecurity().getSig(), partnerId);
     }
 
-    public void verifyMessageSignature(ResponseMessage message, Long partnerId) throws SecurityException {
+    public void verifyMessageSignature(ResponseMessage message, Long partnerId) throws SecurityServiceException {
         verifyMessageSignature(message.getPayload().toString(), message.getSecurity().getSig(), partnerId);
     }
 
-    private void verifyMessageSignature(String payload, String signature, Long partnerId) throws SecurityException {
+    private void verifyMessageSignature(String payload, String signature, Long partnerId) throws SecurityServiceException {
         try {
             PartnerCertificate partnerCertificate =
                     partnerCertificateRepository.findOneByPartnerIdAndValidDate(partnerId);
@@ -105,7 +106,7 @@ public class SecurityService {
                 throw new RuntimeException("Signature is invalid");
             }
         } catch (Exception e) {
-            throw new SecurityException(e.getMessage(), e);
+            throw new SecurityServiceException(e.getMessage(), e);
         }
     }
 
