@@ -8,7 +8,6 @@ import devnoh.demoapp.dto.RequestMessage;
 import devnoh.demoapp.dto.ResponseHeader;
 import devnoh.demoapp.dto.ResponseMessage;
 import devnoh.demoapp.error.SecurityServiceException;
-import devnoh.demoapp.repository.PartnerCertificateRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,7 +37,7 @@ public class SecurityServiceTest {
     SecurityService securityService;
 
     @Mock
-    PartnerCertificateRepository partnerCertificateRepository;
+    PartnerCertificateService partnerCertificateService;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -90,7 +89,7 @@ public class SecurityServiceTest {
         partnerCertificate.setPartner(partner);
         partnerCertificate.setPublicKey(PUBLIC_KEY_BASE64);
 
-        when(partnerCertificateRepository.findOneByPartnerIdAndValidDate(1L)).thenReturn(partnerCertificate);
+        when(partnerCertificateService.getLastValidPartnerCertificate(1L)).thenReturn(partnerCertificate);
         securityService.verifyMessageSignature(requestMessage, 1L);
 
         requestMessage.getSecurity().setSig(INVALID_SIGNATURE);

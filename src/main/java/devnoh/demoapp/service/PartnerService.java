@@ -11,14 +11,8 @@ public class PartnerService {
     @Autowired
     private PartnerRepository partnerRepository;
 
-//    @Autowired
-//    private PartnerCertificateRepository partnerCertificateRepository;
-
     public Partner getPartner(Long partnerId) {
         return partnerRepository.findOne(partnerId);
     }
 
-//    public PartnerCertificate getLastValidPartnerCertificate(Long partnerId) {
-//        return partnerCertificateRepository.findOneByPartnerIdAndValidDate(partnerId);
-//    }
 }

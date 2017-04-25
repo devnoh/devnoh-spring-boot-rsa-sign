@@ -43,30 +43,37 @@ public class SecurityUtil {
     private SecurityUtil() {
     }
 
+    public static String stripCertificateBeginEndTags(String pem) {
+        return pem.replace(PEM_CERT_BEGIN, "").replace(PEM_CERT_END, "").replaceAll("\\s", "");
+    }
+
+    public static String stripPrivateKeyBeginEndTags(String pem) {
+        return pem.replace(PEM_PRIVATE_BEGIN, "").replace(PEM_PRIVATE_END, "")
+                .replace(PEM_RSA_PRIVATE_BEGIN, "").replace(PEM_RSA_PRIVATE_END, "").replaceAll("\\s", "");
+    }
+
+    public static String stripPublicKeyBeginEndTags(String pem) {
+        return pem.replace(PEM_PUBLIC_BEGIN, "").replace(PEM_PUBLIC_END, "").replaceAll("\\s", "");
+    }
+
     public static X509Certificate loadCertificate(byte[] certDer) throws CertificateException {
         CertificateFactory factory = CertificateFactory.getInstance("X.509");
         return (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certDer));
     }
 
     public static X509Certificate loadCertificate(String certPem) throws CertificateException {
-        certPem = certPem.replace(PEM_CERT_BEGIN, "").replace(PEM_CERT_END, "");
-        certPem = certPem.replaceAll("\\s", "");
-        return loadCertificate(Base64.getDecoder().decode(certPem));
+        byte[] certBytes = Base64.getDecoder().decode(stripCertificateBeginEndTags(certPem));
+        return loadCertificate(certBytes);
     }
 
     public static PrivateKey loadPrivateKey(String keyPem) throws GeneralSecurityException, IOException {
         if (keyPem.indexOf(PEM_PRIVATE_BEGIN) != -1) { // PKCS#8 format
-            keyPem = keyPem.replace(PEM_PRIVATE_BEGIN, "").replace(PEM_PRIVATE_END, "");
-            keyPem = keyPem.replaceAll("\\s", "");
-
-            byte[] pkcs8EncodedKey = Base64.getDecoder().decode(keyPem);
-            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8EncodedKey);
+            byte[] privateBytes = Base64.getDecoder().decode(stripPrivateKeyBeginEndTags(keyPem));
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateBytes);
             return KeyFactory.getInstance("RSA").generatePrivate(keySpec);
         } else { // if (keyPem.indexOf(PEM_RSA_PRIVATE_BEGIN) != -1) {  // PKCS#1 format
-            keyPem = keyPem.replace(PEM_RSA_PRIVATE_BEGIN, "").replace(PEM_RSA_PRIVATE_END, "");
-            keyPem = keyPem.replaceAll("\\s", "");
-
-            DerInputStream derReader = new DerInputStream(Base64.getDecoder().decode(keyPem));
+            byte[] privateBytes = Base64.getDecoder().decode(stripPrivateKeyBeginEndTags(keyPem));
+            DerInputStream derReader = new DerInputStream(privateBytes);
             DerValue[] seq = derReader.getSequence(0);
             if (seq.length < 9) {
                 throw new GeneralSecurityException("Could not parse a PKCS1 private key.");
@@ -89,10 +96,7 @@ public class SecurityUtil {
     }
 
     public static PublicKey loadPublickey(String keyPem) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        keyPem = keyPem.replace(PEM_PUBLIC_BEGIN, "").replace(PEM_PUBLIC_END, "");
-        keyPem = keyPem.replaceAll("\\s", "");
-
-        byte[] publicBytes = Base64.getDecoder().decode(keyPem);
+        byte[] publicBytes = Base64.getDecoder().decode(stripPublicKeyBeginEndTags(keyPem));
         return KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(publicBytes));
     }
 
