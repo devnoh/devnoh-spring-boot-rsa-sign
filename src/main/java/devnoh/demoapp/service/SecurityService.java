@@ -6,7 +6,6 @@ import devnoh.demoapp.dto.ResponseMessage;
 import devnoh.demoapp.dto.Security;
 import devnoh.demoapp.error.PartnerCertificateNotFoundException;
 import devnoh.demoapp.error.SecurityServiceException;
-import devnoh.demoapp.repository.PartnerCertificateRepository;
 import devnoh.demoapp.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,7 +43,7 @@ public class SecurityService {
     private String keystoreKeyAlias;
 
     @Autowired
-    private PartnerCertificateRepository partnerCertificateRepository;
+    private PartnerCertificateService partnerCertificateService;
 
     public void addMessageSignature(RequestMessage message) throws SecurityServiceException {
         message.setSecurity(new Security(generateMessageSignature(message.getPayload().toString())));
@@ -86,10 +85,11 @@ public class SecurityService {
         verifyMessageSignature(message.getPayload().toString(), message.getSecurity().getSig(), partnerId);
     }
 
-    private void verifyMessageSignature(String payload, String signature, Long partnerId) throws SecurityServiceException {
+    private void verifyMessageSignature(String payload, String signature, Long partnerId)
+            throws SecurityServiceException {
         try {
             PartnerCertificate partnerCertificate =
-                    partnerCertificateRepository.findOneByPartnerIdAndValidDate(partnerId);
+                    partnerCertificateService.getLastValidPartnerCertificate(partnerId);
             if (partnerCertificate == null) {
                 throw new PartnerCertificateNotFoundException(partnerId);
             }
