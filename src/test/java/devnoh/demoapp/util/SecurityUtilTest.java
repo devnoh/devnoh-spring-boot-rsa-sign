@@ -10,6 +10,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
+import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
@@ -37,6 +38,7 @@ public class SecurityUtilTest {
         InputStream certIn = getClass().getResourceAsStream("/security/partner.crt");
         String certPem = IOUtils.toString(certIn, "UTF-8");
         X509Certificate certificate = SecurityUtil.loadCertificate(certPem);
+        assertNotNull(certificate);
 
         log.info("version={}", certificate.getVersion());
         log.info("serialNumber={}", certificate.getSerialNumber());
@@ -47,6 +49,7 @@ public class SecurityUtilTest {
         log.info("sigAlgorithm={}", certificate.getSigAlgName());
         PublicKey publicKey = certificate.getPublicKey();
         log.info("publicKey={}", publicKey.toString());
+        log.info("fingerprint={}", SecurityUtil.getFingerprint(certificate));
     }
 
     @Test

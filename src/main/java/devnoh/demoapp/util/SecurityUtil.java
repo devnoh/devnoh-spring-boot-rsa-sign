@@ -9,11 +9,13 @@ import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -134,6 +136,20 @@ public class SecurityUtil {
         publicSignature.update(plainText.getBytes(UTF_8));
         byte[] signatureBytes = Base64.getDecoder().decode(signature);
         return publicSignature.verify(signatureBytes);
+    }
+
+    public static String getFingerprint(X509Certificate cert)
+            throws NoSuchAlgorithmException, CertificateEncodingException {
+        byte[] digest = MessageDigest.getInstance("SHA1").digest(cert.getEncoded());
+        //return DatatypeConverter.printHexBinary(digest);
+        StringBuilder builder = new StringBuilder();
+        for (byte b : digest) {
+            if (builder.length() > 0) {
+                builder.append(":");
+            }
+            builder.append(String.format("%02X", b));
+        }
+        return builder.toString();
     }
 
 }

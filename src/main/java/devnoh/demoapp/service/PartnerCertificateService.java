@@ -29,20 +29,19 @@ public class PartnerCertificateService {
     private PartnerCertificateRepository partnerCertificateRepository;
 
     @Transactional
-    public PartnerCertificate createPartnerCertificate(Long partnerId, String certPem) throws CertificateException {
+    public PartnerCertificate createPartnerCertificate(Long partnerId, String pemCert) throws CertificateException {
 
         Partner partner = partnerRepository.findOne(partnerId);
         if (partner == null) {
             throw new PartnerNotFoundException(partnerId);
         }
 
-        certPem = SecurityUtil.stripCertificateBeginEndTags(certPem);
-        byte[] certBytes = Base64.getDecoder().decode(certPem);
-        X509Certificate certificate = SecurityUtil.loadCertificate(certBytes);
+        X509Certificate certificate = SecurityUtil.loadCertificate(pemCert);
+        log.debug("certificate={}", certificate);
 
         PartnerCertificate partnerCertificate = new PartnerCertificate();
         partnerCertificate.setPartner(partner);
-        partnerCertificate.setCertificate(certBytes);
+        partnerCertificate.setCertificate(certificate.getEncoded());
         partnerCertificate.setVersion(String.valueOf(certificate.getVersion()));
         partnerCertificate.setSerialNumber(certificate.getSerialNumber().toString());
         partnerCertificate.setSubject(certificate.getSubjectDN().toString());
